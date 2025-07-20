@@ -1,21 +1,23 @@
-# Use the latest Node.js LTS image
-FROM node:20-alpine
+# Stage 1: Build the React app
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-
-# Copy the rest of the app
 COPY . .
+RUN npm run build
 
-# Expose Vite's default port
-EXPOSE 5173
+# Stage 2: Serve the app with a lightweight static server
+FROM node:20-alpine
 
-# Start the Vite dev server
-CMD ["npm", "run", "dev"]
+WORKDIR /app
+
+RUN npm install -g serve
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]
