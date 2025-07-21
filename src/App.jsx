@@ -2,6 +2,8 @@
 
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FaInstagram, FaReddit, FaSnapchatGhost } from "react-icons/fa";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import Gallery from "./Gallery";
 import Request from "./Request";
 
@@ -12,6 +14,8 @@ const pets = [
 ];
 
 function Home() {
+  const greetingRef = useRef(null);
+  const greetingInView = useInView(greetingRef, { once: true });
   // Reveal sections: art, then each pet, then greeting/cta/footer
   const revealSections = [
     {
@@ -35,7 +39,7 @@ function Home() {
       </nav>
 
       {/* Greeting Section (always at top) */}
-      <section className="flex flex-col items-center justify-center min-h-[60vh] pt-12 pb-8 text-center">
+      <section ref={greetingRef} className="flex flex-col items-center justify-center min-h-[60vh] pt-12 pb-8 text-center">
         <motion.img
           src="/images/josephine.png"
           alt="Josephine"
@@ -68,42 +72,34 @@ function Home() {
       </section>
 
       {/* Reveal Story Sections */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ staggerChildren: 0.5 }}
-      >
-        {revealSections.map((section, idx) => {
-          const variants = {
-            hidden: {
-              opacity: 0,
-              x: section.direction === "left" ? -150 : 150,
-            },
-            visible: {
-              opacity: 1,
-              x: 0,
-              transition: { duration: 0.8, delay: idx * 0.2 },
-            },
-          };
-          return (
-            <motion.section
-              key={idx}
-              variants={variants}
-              className="flex flex-col items-center justify-center min-h-[60vh] py-6 overflow-x-hidden"
-            >
-              <motion.img
-                src={section.img}
-                alt={section.text}
-                className="w-64 h-64 sm:w-80 sm:h-80 rounded-lg shadow mb-4 object-cover"
-              />
-              <motion.span className="block text-xl sm:text-2xl font-playfair italic text-gray-800 mt-1">
-                {section.text}
-              </motion.span>
-            </motion.section>
-          );
-        })}
-      </motion.div>
+      {revealSections.map((section, idx) => {
+        if (idx === 0 && !greetingInView) return null;
+        return (
+        <section
+  key={idx}
+  className="flex flex-col items-center justify-center min-h-[60vh] py-6"
+>
+          <motion.img
+            src={section.img}
+            alt={section.text}
+            className="w-64 h-64 sm:w-80 sm:h-80 rounded-lg shadow mb-4 object-cover"
+            initial={section.direction === "left" ? { x: -150, opacity: 0 } : { x: 150, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+          />
+          <motion.span
+            className="block text-xl sm:text-2xl font-playfair italic text-gray-800 mt-1"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+          >
+            {section.text}
+          </motion.span>
+        </section>
+        );
+      })}
 
       {/* CTA to Gallery */}
       <div className="flex justify-center py-8">
