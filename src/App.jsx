@@ -3,7 +3,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FaInstagram, FaReddit, FaSnapchatGhost } from "react-icons/fa";
 import Gallery from "./Gallery";
-import Shop from "./Shop";
 import Request from "./Request";
 
 const pets = [
@@ -129,14 +128,12 @@ export default function App() {
         <Link to="/" className="text-lg font-bold text-blue-700">Josephine's Art</Link>
         <nav className="hidden sm:flex gap-8">
           <Link to="/gallery" className="font-semibold hover:text-blue-600">Gallery</Link>
-          <Link to="/shop" className="font-semibold hover:text-blue-600">Shop</Link>
           <Link to="/request" className="font-semibold hover:text-blue-600">Request</Link>
         </nav>
       </header>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<Gallery />} />
-        <Route path="/shop" element={<Shop />} />
         <Route path="/request" element={<Request />} />
       </Routes>
     </Router>
