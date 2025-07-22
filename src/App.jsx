@@ -6,6 +6,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Gallery from "./Gallery";
 import Request from "./Request";
+import Shop from "./Shop";
 
 const pets = [
   { img: "/images/dog.png", text: "and this is my Nacho" },
@@ -35,6 +36,7 @@ function Home() {
       {/* Floating Nav for Mobile */}
       <nav className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 bg-white/90 rounded-full shadow-lg px-6 py-2 flex gap-8 sm:hidden border">
         <Link to="/gallery" className="font-semibold text-blue-600">Gallery</Link>
+        <Link to="/shop" className="font-semibold text-blue-600">Shop</Link>
         <Link to="/request" className="font-semibold text-blue-600">Request</Link>
       </nav>
 
@@ -124,12 +126,14 @@ export default function App() {
         <Link to="/" className="text-lg font-bold text-blue-700">Josephine's Art</Link>
         <nav className="hidden sm:flex gap-8">
           <Link to="/gallery" className="font-semibold hover:text-blue-600">Gallery</Link>
+          <Link to="/shop" className="font-semibold hover:text-blue-600">Shop</Link>
           <Link to="/request" className="font-semibold hover:text-blue-600">Request</Link>
         </nav>
       </header>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/shop" element={<Shop />} />
         <Route path="/request" element={<Request />} />
       </Routes>
     </Router>
