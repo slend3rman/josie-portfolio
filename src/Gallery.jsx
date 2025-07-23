@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useTexture, Html } from '@react-three/drei';
 import { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const imagePaths = [
   '/images/painting.png',
@@ -10,7 +10,7 @@ const imagePaths = [
   '/images/mouse.png',
 ];
 
-function GalleryScene({ images, currentIndex, offset }) {
+function GalleryScene({ images, currentIndex, offset, onImageClick }) {
   const groupRef = useRef();
   const targetX = -currentIndex * 3 + offset;
 
@@ -25,8 +25,14 @@ function GalleryScene({ images, currentIndex, offset }) {
       {images.map((img, idx) => {
         const texture = useTexture(img);
         return (
-          <group key={idx} position={[idx * 3, 0, 0]}>
-            <mesh position={[0, 0.5, 0]}>
+          <motion.group
+            key={idx}
+            position={[idx * 3, 0, 0]}
+            initial={{ x: 5 }}
+            animate={{ x: 0 }}
+            transition={{ type: 'spring', stiffness: 60 }}
+          >
+            <mesh position={[0, 0.5, 0]} onClick={onImageClick}>
               <planeGeometry args={[2, 2]} />
               <meshStandardMaterial map={texture} />
             </mesh>
@@ -34,7 +40,7 @@ function GalleryScene({ images, currentIndex, offset }) {
               <planeGeometry args={[2.4, 2.4]} />
               <meshStandardMaterial color="#2b2b2b" />
             </mesh>
-            <Html position={[0, -0.9, 0]} center>
+            <Html position={[0, -1.4, 0]} center zIndexRange={[0, 2]}> {/* Label below, behind YOU DIED */}
               <div style={{ 
                 color: '#111', 
                 fontSize: '13px', 
@@ -48,7 +54,7 @@ function GalleryScene({ images, currentIndex, offset }) {
                 {img.split('/').pop()}
               </div>
             </Html>
-          </group>
+          </motion.group>
         );
       })}
     </group>
@@ -58,6 +64,7 @@ function GalleryScene({ images, currentIndex, offset }) {
 export default function Gallery() {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [offset, setOffset] = useState(0);
+  const [youDied, setYouDied] = useState(false);
   const scrollRef = useRef(null);
 
   const scrollToImage = (index) => {
@@ -65,6 +72,14 @@ export default function Gallery() {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ left: index * 80, behavior: 'smooth' });
     }
+  };
+
+  const handleImageClick = () => {
+    setYouDied(true);
+    setTimeout(() => {
+      setYouDied(false);
+      setCurrentIndex(0);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -116,11 +131,15 @@ export default function Gallery() {
   }, [currentIndex]);
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-[#f4f1ed] text-gray-900 flex flex-col items-center justify-center">
       <div id="gallery-canvas" className="h-[60vh] w-full max-w-6xl relative">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 text-sm font-bold text-red-800 z-20">
+          Do not touch the artwork...my dev is crazyy
+        </div>
+
         {currentIndex === -1 && (
           <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center bg-black text-white z-10"
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black text-white z-30"
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
             transition={{ delay: 2, duration: 1 }}
@@ -144,13 +163,28 @@ export default function Gallery() {
             </motion.div>
           </motion.div>
         )}
+
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
           {currentIndex >= 0 && (
-            <GalleryScene images={imagePaths} currentIndex={currentIndex} offset={offset} />
+            <GalleryScene images={imagePaths} currentIndex={currentIndex} offset={offset} onImageClick={handleImageClick} />
           )}
         </Canvas>
+
+        <AnimatePresence>
+          {youDied && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center bg-black text-red-600 text-5xl font-extrabold z-50"
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ opacity: 1, scale: 1.3 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+            >
+              YOU DIED
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div
