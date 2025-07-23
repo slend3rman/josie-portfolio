@@ -7,6 +7,12 @@ import { useRef } from "react";
 import Gallery from "./Gallery";
 import Request from "./Request";
 import Shop from "./Shop";
+const navLinks = [
+  { to: "/gallery", label: "Gallery" },
+  { to: "/shop", label: "Shop" },
+  { to: "/request", label: "Request" },
+];
+
 
 const pets = [
   { img: "/images/dog.png", text: "and this is my Nacho" },
@@ -34,11 +40,9 @@ function Home() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-pink-50 to-blue-50 text-gray-900 font-sans">
       {/* Floating Nav for Mobile */}
-      <nav className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 bg-white/90 rounded-full shadow-lg px-6 py-2 flex gap-8 sm:hidden border">
-        <Link to="/gallery" className="font-semibold text-blue-600">Gallery</Link>
-        <Link to="/shop" className="font-semibold text-blue-600">Shop</Link>
-        <Link to="/request" className="font-semibold text-blue-600">Request</Link>
-      </nav>
+      <nav className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 bg-white/90 rounded-full shadow-lg px-6 py-2 flex gap-8 sm:hidden border">{navLinks.map(link => (
+        <Link key={link.to} to={link.to} className="font-semibold text-blue-600">{link.label}</Link>
+      ))}</nav>
 
       {/* Greeting Section (always at top) */}
       <section ref={greetingRef} className="flex flex-col items-center justify-center min-h-[60vh] pt-12 pb-8 text-center">
@@ -124,11 +128,9 @@ export default function App() {
     <Router>
       <header className="w-full bg-white/80 shadow-sm py-3 px-4 flex justify-between items-center sticky top-0 z-40">
         <Link to="/" className="text-lg font-bold text-blue-700">Josephine's Art</Link>
-        <nav className="hidden sm:flex gap-8">
-          <Link to="/gallery" className="font-semibold hover:text-blue-600">Gallery</Link>
-          <Link to="/shop" className="font-semibold hover:text-blue-600">Shop</Link>
-          <Link to="/request" className="font-semibold hover:text-blue-600">Request</Link>
-        </nav>
+        <nav className="hidden sm:flex gap-8">{navLinks.map(link => (
+          <Link key={link.to} to={link.to} className="font-semibold hover:text-blue-600">{link.label}</Link>
+        ))}</nav>
       </header>
       <Routes>
         <Route path="/" element={<Home />} />
